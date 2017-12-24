@@ -1,0 +1,91 @@
+<!--https://www.npmjs.com/package/react-easy-transition-->
+
+<html>
+    <head>Testing</head>
+    
+    <div id="app"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.1.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.1.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+    <script type="text/babel">
+        
+        let RegionStyles = {
+            height: 200,
+            width: 100,
+            backgroundColor: 'dddddd',
+            transition: '2.5s'
+        };
+        
+        let ColorChangeStyle = {
+            backgroundColor: '000000'
+        }
+        
+        const MovedStyles = {
+            left: 200,
+            top: 200
+        };
+
+        class Region extends React.Component {
+            getRegionStyles(){
+                return (this.props.alternateColor ? Object.assign({}, RegionStyles, ColorChangeStyle) : RegionStyles);
+            }
+            
+            render(){
+                return(
+                    <div style={this.getRegionStyles()}></div>
+                )
+            }
+        }
+        
+        const Item = (props) =>{
+            return (
+                <div>
+                    <p style = {props.styles}>Item info</p>
+                </div>
+                
+            );
+        }
+    
+       class App extends React.Component {
+           constructor(props) {
+             super(props);
+             this.state = {
+               thing: 'state info',
+               styles: {
+                   color: 'red',
+                   borderColor: 'black',
+                   borderWidth: 0.5,
+                   transition: '10.5s'
+               },
+               colorChange: false
+             };
+             
+             this.toggleColor = this.toggleColor.bind(this);
+           }
+           
+            toggleColor(event){
+                this.setState({
+                    colorChange: !this.state.colorChange
+                });
+            }
+            
+           render() {
+               return (
+                   <div>
+                        <h1 style={this.state.styles}>Rendering Component</h1>
+                        {this.props.thing}
+                        {this.state.thing}
+                        <Item styles={this.state.styles}/>
+                        Rendering region:
+                        <Region alternateColor={this.state.colorChange} />
+                        <button onClick={this.toggleColor}>Test Button</button>
+                   </div>
+               )
+           }
+       }
+       
+       ReactDOM.render(
+           <App thing="stuff" />, document.getElementById('app')
+        );
+    </script>
+</html>
