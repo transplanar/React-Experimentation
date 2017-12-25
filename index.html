@@ -13,43 +13,77 @@
         const region_height = 200;
         const region_margin = 20;
         
-        // let RegionStyles = {
-        //     height: region_width,
-        //     width: region_height,
-        //     backgroundColor: 'dddddd',
-        //     transition: '2.5s'
-        // };
-        
-        // let ColorChangeStyle = {
-        //     backgroundColor: '000000',
-        //     // marginLeft: 500
-        // }
-        
         class Region extends React.Component {
+            constructor(props){
+                super(props);
+                
+                this.handleClick = this.handleClick.bind(this);
+            }
+            
+            handleClick(event){
+                console.log(`Clicking Box ${this.props.id}`);
+            }
+            
             getRegionStyles(){
-                let defaultStyle = regionDefaultStyle(this.props.index);
-                return (this.props.alternateColor ? Object.assign({}, defaultStyle, colorChangedStyle) : defaultStyle);
+                let defaultStyle = this.regionDefaultStyle();
+                return (this.props.alternateColor ? Object.assign({}, defaultStyle, this.colorChangedStyle()) : defaultStyle);
             }
             
-            regionDefaultStyle(index){
-                height: region_width,
-                width: region_height,
-                backgroundColor: 'dddddd',
-                transition: '2.5s',
-                marginLeft: getPosition(index)
+            regionDefaultStyle(){
+                return {
+                    height: region_height,
+                    width: region_width,
+                    backgroundColor: 'dddddd',
+                    transition: '2.5s',
+                    left: 100,
+                    margin: 10,
+                    display: 'inline-block'
+                }
             }
             
-            let colorChangedStyle = {
-                backgroundColor: '000000'
-            }
-            
-            getPosition(index){
-                return (region_width * (index +1)) + (region_margin * index);
+            colorChangedStyle(){
+                return {
+                    backgroundColor: '000000',
+                    marginLeft: this.props.xpos
+                }
             }
             
             render(){
                 return(
-                    <div style={this.getRegionStyles()}></div>
+                    <div onClick={this.handleClick} style={this.getRegionStyles()}></div>
+                )
+            }
+        }
+        
+        class TinyRegion extends Region{
+            constructor(props){
+                super(props);
+            }
+            
+            regionDefaultStyle(){
+                return {
+                    height: `100%`,
+                    width: `100%`,
+                    backgroundColor: '42f4f4',
+                    transition: '2.5s'
+                }
+            }
+            
+            render(){
+                var containerStyles = {
+                    boxSizing: `border-box`,
+                    display: `inline-block`,
+                    width: region_width,
+                    height: region_height,
+                    border: `2px solid red`,
+                    margin: 10,
+                    padding: 10
+                }
+                
+                return(
+                    <div style={containerStyles}>
+                        {super.render()}
+                    </div>
                 )
             }
         }
@@ -59,7 +93,6 @@
                 <div>
                     <p style = {props.styles}>Item info</p>
                 </div>
-                
             );
         }
     
@@ -75,7 +108,7 @@
                    transition: '10.5s',
                },
                colorChange: false,
-               regionInstances: 0
+               regionInstances: 4
              };
              
              this.toggleColor = this.toggleColor.bind(this);
@@ -87,23 +120,43 @@
                 });
             }
             
-            getCurrentRegionIndex(){
-                this.setState({
-                    regionInstances: this.state.regionInstances++
-                });
-                
-                return this.state.regionInstances;
+            assignRegionPosition(index){
+                return region_margin;
             }
             
            render() {
+               let index = 0;
+               var regions = [];
+               let count = this.state.regionInstances;
+
+               while(count--){
+                    regions.push(
+                        <Region 
+                            key={index}
+                            id={index}
+                            alternateColor={this.state.colorChange}
+                            xpos={this.assignRegionPosition(index)}
+                        />
+                   )
+                   
+                   index++;
+               }
+               
+               regions.push(
+                   <TinyRegion
+                        id='tiny'
+                        key='tiny'
+                        alternateColor={this.state.colorChange}
+                        xpos={this.assignRegionPosition(index)}
+                   />
+                );
+               
                return (
                    <div>
                         <h1 style={this.state.styles}>Rendering Component</h1>
-                        {this.props.thing}
-                        {this.state.thing}
                         <Item styles={this.state.styles}/>
-                        Rendering region:
-                        <Region alternateColor={this.state.colorChange} index={this.getCurrentRegionIndex()} />
+                        Rendering regions:
+                        <div>{regions}</div>
                         <button onClick={this.toggleColor}>Test Button</button>
                    </div>
                )
