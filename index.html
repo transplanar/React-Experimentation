@@ -7,27 +7,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.1.0/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.1.0/umd/react-dom.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+    
     <script type="text/babel">
+        const region_width = 100;
+        const region_height = 200;
+        const region_margin = 20;
         
-        let RegionStyles = {
-            height: 200,
-            width: 100,
-            backgroundColor: 'dddddd',
-            transition: '2.5s'
-        };
+        // let RegionStyles = {
+        //     height: region_width,
+        //     width: region_height,
+        //     backgroundColor: 'dddddd',
+        //     transition: '2.5s'
+        // };
         
-        let ColorChangeStyle = {
-            backgroundColor: '000000'
-        }
+        // let ColorChangeStyle = {
+        //     backgroundColor: '000000',
+        //     // marginLeft: 500
+        // }
         
-        const MovedStyles = {
-            left: 200,
-            top: 200
-        };
-
         class Region extends React.Component {
             getRegionStyles(){
-                return (this.props.alternateColor ? Object.assign({}, RegionStyles, ColorChangeStyle) : RegionStyles);
+                let defaultStyle = regionDefaultStyle(this.props.index);
+                return (this.props.alternateColor ? Object.assign({}, defaultStyle, colorChangedStyle) : defaultStyle);
+            }
+            
+            regionDefaultStyle(index){
+                height: region_width,
+                width: region_height,
+                backgroundColor: 'dddddd',
+                transition: '2.5s',
+                marginLeft: getPosition(index)
+            }
+            
+            let colorChangedStyle = {
+                backgroundColor: '000000'
+            }
+            
+            getPosition(index){
+                return (region_width * (index +1)) + (region_margin * index);
             }
             
             render(){
@@ -55,9 +72,10 @@
                    color: 'red',
                    borderColor: 'black',
                    borderWidth: 0.5,
-                   transition: '10.5s'
+                   transition: '10.5s',
                },
-               colorChange: false
+               colorChange: false,
+               regionInstances: 0
              };
              
              this.toggleColor = this.toggleColor.bind(this);
@@ -69,6 +87,14 @@
                 });
             }
             
+            getCurrentRegionIndex(){
+                this.setState({
+                    regionInstances: this.state.regionInstances++
+                });
+                
+                return this.state.regionInstances;
+            }
+            
            render() {
                return (
                    <div>
@@ -77,7 +103,7 @@
                         {this.state.thing}
                         <Item styles={this.state.styles}/>
                         Rendering region:
-                        <Region alternateColor={this.state.colorChange} />
+                        <Region alternateColor={this.state.colorChange} index={this.getCurrentRegionIndex()} />
                         <button onClick={this.toggleColor}>Test Button</button>
                    </div>
                )

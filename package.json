@@ -4,6 +4,7 @@
   "description": "Experiments in react ",
   "main": "index.js",
   "dependencies": {
+    "react-motion": "^0.5.2",
     "react-move": "^2.6.0"
   },
   "devDependencies": {},
